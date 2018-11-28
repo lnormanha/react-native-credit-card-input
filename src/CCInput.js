@@ -6,13 +6,13 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ViewPropTypes,
+  ViewPropTypes
 } from "react-native";
 
 const s = StyleSheet.create({
   baseInputStyle: {
-    color: "black",
-  },
+    color: "black"
+  }
 });
 
 export default class CCInput extends Component {
@@ -36,7 +36,8 @@ export default class CCInput extends Component {
     onChange: PropTypes.func,
     onBecomeEmpty: PropTypes.func,
     onBecomeValid: PropTypes.func,
-    additionalInputProps: PropTypes.shape(TextInput.propTypes),
+    autoCapitalize: PropTypes.string,
+    additionalInputProps: PropTypes.shape(TextInput.propTypes)
   };
 
   static defaultProps = {
@@ -51,6 +52,7 @@ export default class CCInput extends Component {
     onBecomeEmpty: () => {},
     onBecomeValid: () => {},
     additionalInputProps: {},
+    autoCapitalize: "words"
   };
 
   componentWillReceiveProps = newProps => {
@@ -67,33 +69,49 @@ export default class CCInput extends Component {
   _onChange = value => this.props.onChange(this.props.field, value);
 
   render() {
-    const { label, value, placeholder, status, keyboardType,
-            containerStyle, inputStyle, labelStyle,
-            validColor, invalidColor, placeholderColor,
-            additionalInputProps } = this.props;
+    const {
+      label,
+      value,
+      placeholder,
+      status,
+      keyboardType,
+      containerStyle,
+      inputStyle,
+      labelStyle,
+      validColor,
+      invalidColor,
+      placeholderColor,
+      additionalInputProps,
+      autoCapitalize
+    } = this.props;
     return (
-      <TouchableOpacity onPress={this.focus}
-        activeOpacity={0.99}>
+      <TouchableOpacity onPress={this.focus} activeOpacity={0.99}>
         <View style={[containerStyle]}>
-          { !!label && <Text style={[labelStyle]}>{label}</Text>}
-          <TextInput ref="input"
+          {!!label && <Text style={[labelStyle]}>{label}</Text>}
+          <TextInput
+            ref="input"
             {...additionalInputProps}
             keyboardType={keyboardType}
-            autoCapitalise="words"
+            autoCapitalize={autoCapitalize}
             autoCorrect={false}
             style={[
               s.baseInputStyle,
               inputStyle,
-              ((validColor && status === "valid") ? { color: validColor } :
-              (invalidColor && status === "invalid") ? { color: invalidColor } :
-              {}),
+              validColor && status === "valid"
+                ? { color: validColor }
+                : invalidColor && status === "invalid"
+                ? { color: invalidColor }
+                : {}
             ]}
             underlineColorAndroid={"transparent"}
             placeholderTextColor={placeholderColor}
             placeholder={placeholder}
             value={value}
             onFocus={this._onFocus}
-            onChangeText={this._onChange} />
+            onChangeText={this._onChange}
+            returnKeyType="next"
+            onSubmitEditing={this.focus}
+          />
         </View>
       </TouchableOpacity>
     );
